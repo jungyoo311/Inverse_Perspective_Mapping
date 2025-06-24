@@ -1,4 +1,6 @@
 # IPM (Inverse Perspective Mapping) Project
+## Prototype data extraction in Python
+## Build perceptin logic in c++
 
 ## Features Log
 
@@ -9,3 +11,6 @@
 - **Configurable Parameters**: Hard-coded transformation parameters (param1=570, param2=35)
 - **Output Generation**: Saves processed video as MP4 format
 - **Interactive Display**: Live preview with 'q' key exit option
+
+## notes
+1. https://www.youtube.com/watch?v=XTmlhvlmcf8list=PLL57Sz4fhxLpCXgN0lvCF7aHAlRA5FoFr
