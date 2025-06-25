@@ -1,6 +1,6 @@
 # IPM (Inverse Perspective Mapping) Project
 ## Prototype data extraction in Python
-## Build perceptin logic in c++
+## Build perception logic in c++
 ## Demo
 ![IPM Demo](assets/ipm_demo.gif)
 ## Features Log
@@ -17,3 +17,4 @@
 
 ## notes
 1. https://www.youtube.com/watch?v=XTmlhvlmcf8list=PLL57Sz4fhxLpCXgN0lvCF7aHAlRA5FoFr
+2. https://colab.research.google.com/github/waymo-research/waymo-open-dataset/blob r1.0/tutorial/tutorial.ipynb#scrollTo=jqgnxWGVr1mE
