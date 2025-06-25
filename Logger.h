@@ -1,4 +1,4 @@
-#ifdef LOGGER_H
+#ifndef LOGGER_H
 #define LOGGER_H
 
 #include <ctime>
@@ -67,7 +67,9 @@ public:
             auto duration = duration_cast<microseconds>(end_time - it->second);
             double ms = duration.count() / 1000.0;
             ostringstream perfMsg;
-
+            perfMsg << "PERF | " << operation << ": " << fixed << setprecision(3) << ms << "ms";
+            log(INFO, perfMsg.str());
+            timers.erase(it); // Remove the timer after use
         } else{
             log(WARNING, "Timer not found for operation: " + operation);
         }
@@ -124,7 +126,7 @@ extern Logger* g_logger;
 #define LOG_INFO(msg) if(g_logger) g_logger->log(INFO, msg)
 #define LOG_WARNING(msg) if(g_logger) g_logger->log(WARNING, msg)
 #define LOG_ERROR(msg) if(g_logger) g_logger->log(ERROR_, msg)
-#define LOG_CRITICAL(msg) if(g_logger g_logger->log(CRITICAL, msg))
+#define LOG_CRITICAL(msg) if(g_logger) g_logger->log(CRITICAL, msg)
 
 //Perf measurement macros
 #define PERF_START(op) if(g_logger) g_logger->startTimer(op)

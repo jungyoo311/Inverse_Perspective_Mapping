@@ -3,7 +3,9 @@
 ## Build perceptin logic in c++
 
 ## Features Log
-
+### V2 - 6/24/2025
+- **Logging and Performance**: Logging real-time performance tracking
+- **Error Handling**: exception handling
 ### V1 - 06/24/2025
 - **IPM Transformation**: Implemented inverse perspective mapping to convert road view to bird's-eye view
 - **Picture-in-Picture Display**: Added overlay functionality showing both original and transformed views
