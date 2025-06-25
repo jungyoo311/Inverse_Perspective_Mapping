@@ -15,6 +15,7 @@
 - **Output Generation**: Saves processed video as MP4 format
 - **Interactive Display**: Live preview with 'q' key exit option
 ### Waymo Open Dataset - Perception v1.4.3
+1: FRONT, 2: FRONT_LEFT, 3: FRONT_RIGHT, 4: SIDE_LEFT, 5: SIDE_RIGHT
 - Images: [1, 2, 4, 3, 5]
 - LIDARs: [1, 2, 3, 4, 5]
 - IMU: Present
