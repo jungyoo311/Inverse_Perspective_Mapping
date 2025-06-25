@@ -1,7 +1,8 @@
 # IPM (Inverse Perspective Mapping) Project
 ## Prototype data extraction in Python
 ## Build perceptin logic in c++
-
+## Demo
+![IPM Demo](assets/ipm_demo.gif)
 ## Features Log
 ### V2 - 6/24/2025
 - **Logging and Performance**: Logging real-time performance tracking
