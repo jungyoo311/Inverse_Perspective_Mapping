@@ -14,6 +14,12 @@
 - **Configurable Parameters**: Hard-coded transformation parameters (param1=570, param2=35)
 - **Output Generation**: Saves processed video as MP4 format
 - **Interactive Display**: Live preview with 'q' key exit option
+### Waymo Open Dataset - Perception v1.4.3
+- Images: [1, 2, 4, 3, 5]
+- LIDARs: [1, 2, 3, 4, 5]
+- IMU: Present
+- GPS Pose: Present
+- Timestamp: 1579641135577093 - 2020-01-21T00:32:15.577093+00:00
 
 ## notes
 1. https://www.youtube.com/watch?v=XTmlhvlmcf8list=PLL57Sz4fhxLpCXgN0lvCF7aHAlRA5FoFr

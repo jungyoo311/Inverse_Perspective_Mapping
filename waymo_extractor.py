@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Image Extraction
 # Used for waymo-open-dataset percpetion dataset v.1.4.3 March 2024 released
 # June 2025
 # Copyright by github.com/jungyoo311
