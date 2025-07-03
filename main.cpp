@@ -4,6 +4,10 @@
 #include <iomanip>
 #include <filesystem>
 #include "Logger.h"
+//07/03/2025
+// V3: DONE: IPM for front, front_left, front_right.
+// TODO: param1,2 need to be calibrated, figure out camera instrinsic/extrinsic values for calibration
+//
 /// V2: logging completed
 /// 06/24/2025
 // ffmpeg -framerate 30 -pattern_type glob -i "./output/front/front/*.jpg" -s 1280x800 -c:v libx264 -crf 23 -pix_fmt yuv420p output_front.mp4
@@ -422,6 +426,89 @@ int processVideo(const string& input_video_path, const string& output_video_path
     perf_tracker.logSummary();
     return 0;
 }
+// Process three synchronized camera sequences
+int processThreeCameras(const string& front_dir, const string& front_left_dir, const string& front_right_dir,
+                        const string& output_video = "outputCombineThree.mp4", double fps = 30.0, int width = 1280, int height = 800){
+    // get images from all three directories
+    vector<string> front_files = getImageFiles(front_dir);
+    vector<string> front_left_files = getImageFiles(front_left_dir);
+    vector<string> front_right_files = getImageFiles(front_right_dir);
+
+    // check if files are not empty
+    if(front_files.empty() || front_left_files.empty() || front_right_files.empty()){
+        LOG_ERROR("One or more camera directories are empty");
+        return -1;
+    }
+    // frame count: use the smallest frame count
+    int frame_count = min({front_files.size(), front_left_files.size(), front_right_files.size()});
+    LOG_INFO("Processing " + to_string(frame_count) + " synced frames...");
+
+    //initialize video writer
+    VideoWriter writer(output_video, VideoWriter::fourcc('m', 'p', '4', 'v'), fps, Size(width, height));
+    if (!writer.isOpened()){
+        LOG_ERROR("Error: Cannot open output video file");
+        return -1;
+    }
+    
+    auto total_start_time = high_resolution_clock::now();
+
+    // Process Each frame
+    for(int i = 0; i < frame_count; i++){
+        auto frame_start_time = high_resolution_clock::now();
+        try {
+            Mat front = imread(front_files[i]);
+            Mat front_left = imread(front_left_files[i]);
+            Mat front_right = imread(front_right_files[i]);
+
+            // skip if any image failed to load
+            if (front.empty() || front_left.empty() || front_right.empty()) continue;
+
+            // Combine three cameras into single view
+            int single_cam_width = width * 0.65;
+            int single_cam_height = height * 0.65;
+
+            //resize all cameras to same dimensions
+            Mat front_resized, front_left_resized, front_right_resized;
+            resize(front, front_resized, Size(single_cam_width, single_cam_height));
+            resize(front_left, front_left_resized, Size(single_cam_width, single_cam_height));
+            resize(front_right, front_right_resized, Size(single_cam_width, single_cam_height));
+
+            // create combined image has correct dimensions
+            Mat combined;
+            vector<Mat> cameras = {front_left_resized, front_resized, front_right_resized};
+            hconcat(cameras, combined);
+            // Apply
+            Mat IPM_front = IPM(front);
+            Mat IPM_front_left = IPM(front_left);
+            Mat IPM_front_right = IPM(front_right);
+            Mat final_frame;
+            vector<Mat> IPM_combined = {IPM_front_left, IPM_front, IPM_front_right};
+            hconcat(IPM_combined, final_frame);
+
+            //resized frame
+            Mat resized_frame;
+            resize(final_frame, resized_frame, Size(width, height));
+            writer.write(resized_frame);
+            imshow("Three Camera View", resized_frame);
+            if (waitKey(1) == 'q') break;
+
+        } catch(const exception& e){
+            LOG_ERROR("Error processing frame "+ to_string(i) + ": " + string(e.what()));
+            continue;
+        }
+    }
+    auto total_end_time = high_resolution_clock::now();
+    double total_processing_seconds = duration_cast<milliseconds>(total_end_time - total_start_time).count() / 1000.0;
+    
+    writer.release();
+    destroyAllWindows();
+
+    // Log Final summary
+    LOG_INFO("=== Three Camera Processing Complemeted ===");
+    LOG_INFO("Total processing time: " + to_string(total_processing_seconds) + " seconds");
+    LOG_INFO("Video saved to: " + output_video);
+    return 0;
+}
 int main(int argc, char* argv[]) {
     // Initialize logger
     g_logger = new Logger("ipm_processing.log");
@@ -431,9 +518,11 @@ int main(int argc, char* argv[]) {
         LOG_INFO("Usage:");
         LOG_INFO("  For video input: " + string(argv[0]) + " video <input_video_path> [output_video_path]");
         LOG_INFO("  For image sequence: " + string(argv[0]) + " images <input_directory> [output_video_path] [fps]");
+        LOG_INFO("For three cameras: " + string(argv[0]) + " three <front_dir> <front_left_dir> <front_right_dir> [output_video_path] [fps]");
         LOG_INFO("Examples:");
         LOG_INFO("  " + string(argv[0]) + " video ../output_front.mp4");
         LOG_INFO("  " + string(argv[0]) + " images ./waymo_images/ waymo_output.mp4 30");
+        LOG_INFO(" " + string(argv[0]) + " three ./front ./front_left ./front_right combined_output.mp4 30");
         delete g_logger;
         return -1;
     }
@@ -457,12 +546,27 @@ int main(int argc, char* argv[]) {
         double fps = (argc > 4) ? stod(argv[4]) : 30.0;
 
         result = processImageSequence(input_dir, output_video_path, fps);
-    } else{
+    } else if (mode == "three"){
+        // Three Camera Processing mode
+        if (argc < 5){
+            LOG_ERROR("Three directory paths required for three-camera mode: front_dir front_left_dir front_right_dir");
+            delete g_logger;
+            return -1;
+        }
+        string front_dir = argv[2];
+        string front_left_dir = argv[3];
+        string front_right_dir = argv[4];
+        string output_video_path = (argc > 5) ? argv[5] : "outputCombineThree.mp4";
+        double fps = (argc > 6) ? stod(argv[6]) : 30.0;
+
+        result = processThreeCameras(front_dir, front_left_dir, front_right_dir, output_video_path, fps);
+    }
+    else{
         LOG_ERROR("Invalid mode: " + mode + ". Use 'video' or 'images' ");
         result = -1;
     }
     //clean up
     delete g_logger;
     
-    return 0;
+    return result;
 }
