@@ -19,7 +19,3 @@
 - IMU: Present
 - GPS Pose: Present
 - Timestamp: 1579641135577093 - 2020-01-21T00:32:15.577093+00:00
-
-## notes
-1. https://www.youtube.com/watch?v=XTmlhvlmcf8list=PLL57Sz4fhxLpCXgN0lvCF7aHAlRA5FoFr
-2. https://colab.research.google.com/github/waymo-research/waymo-open-dataset/blob r1.0/tutorial/tutorial.ipynb#scrollTo=jqgnxWGVr1mE
