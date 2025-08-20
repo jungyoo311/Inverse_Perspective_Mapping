@@ -1,6 +1,4 @@
 # IPM (Inverse Perspective Mapping) Project
-
-## Demo
 ![IPM Demo](assets/ipm_demo.gif)
 
 ## Features Log
